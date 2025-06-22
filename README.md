@@ -85,13 +85,7 @@ python main.py /path/to/folder --batch
 
 - **False positives/negatives**: Entropy isn't foolproof.
 - **Handler availability**: Some formats require optional libraries (e.g., `rarfile` for RAR).
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
-
+  
 ---
 
 ## 🔑 Key Notes
