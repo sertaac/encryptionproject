@@ -1,8 +1,8 @@
 # Password Protection & Encryption Detector 🔒
 
 A powerful Python tool to detect password-protected and encrypted files across a variety of formats using format-specific handlers and entropy-based analysis.
-- %100 Accuracy on 215 Test Cases for Password Protection.
-- %70 Accuracy on 760 Test Cases for Encryption Detection.
+- %100 Accuracy on 180 Test Cases for Password Protection.
+- %92.78 Accuracy on 180 Test Cases for Encryption Detection.
 
 ---
 
