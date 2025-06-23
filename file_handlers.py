@@ -1,49 +1,53 @@
-# password_detector/file_handlers.py #
+# password_detector/file_handlers.py (GÜNCELLENMİŞ)
 
 import os
 import zipfile
 import sqlite3
-
-# --- Optional Dependency Checks --- #
-# Check for availability of third-party libraries with graceful fallbacks #
 
 try:
     import msoffcrypto
     MSOFFCRYPTO_AVAILABLE = True
 except ImportError:
     MSOFFCRYPTO_AVAILABLE = False
+
 try:
     from PyPDF2 import PdfReader
     from PyPDF2.errors import PdfReadError
     PDF2_AVAILABLE = True
 except ImportError:
     PDF2_AVAILABLE = False
+
 try:
     import pikepdf
     from pikepdf import PasswordError, Pdf
     PIKEPDF_AVAILABLE = True
 except ImportError:
     PIKEPDF_AVAILABLE = False
+
 try:
     import rarfile
     RARFILE_AVAILABLE = True
 except ImportError:
     RARFILE_AVAILABLE = False
+
 try:
     import py7zr
     PY7ZR_AVAILABLE = True
 except ImportError:
     PY7ZR_AVAILABLE = False
+
 try:
     import pypff
     PYPFF_AVAILABLE = True
 except ImportError:
     PYPFF_AVAILABLE = False
+
 try:
     import olefile
     OLEFILE_AVAILABLE = True
 except ImportError:
     OLEFILE_AVAILABLE = False
+
 try:
     from extract_msg import Message
     EXTRACT_MSG_AVAILABLE = True
@@ -51,27 +55,14 @@ except ImportError:
     EXTRACT_MSG_AVAILABLE = False
 
 
-# ========== HANDLER CLASSES ========== #
+# HANDLER SINIFLARI
 
 class OfficeOpenXMLHandler:
-    """Handler for modern Office files (.docx, .xlsx, .pptx)"""
-    
+    @staticmethod
     def is_encrypted(file_path):
-        """
-        Check if Office OpenXML file is password protected.
-        
-        Args:
-            file_path (str): Path to the file
-            
-        Returns:
-            Tuple[bool, bool, float]: 
-                (password_protected, encrypted, confidence)
-        """
         if not MSOFFCRYPTO_AVAILABLE:
             return False, False, 0.0
-            
         try:
-            # First try with msoffcrypto #
             with open(file_path, 'rb') as f:
                 office_file = msoffcrypto.OfficeFile(f)
                 if office_file.is_encrypted():
@@ -79,7 +70,7 @@ class OfficeOpenXMLHandler:
         except Exception:
             pass
 
-        # Fallback: Check for EncryptedPackage in ZIP structure #
+        # Fallback: ZIP içinde EncryptedPackage varsa içerik şifreli olabilir
         try:
             with zipfile.ZipFile(file_path) as zf:
                 if 'EncryptedPackage' in zf.namelist():
@@ -89,26 +80,12 @@ class OfficeOpenXMLHandler:
 
         return False, False, 0.0
 
-
 class OfficeLegacyHandler(OfficeOpenXMLHandler):
-    """Handler for legacy Office files (.doc, .xls, .ppt)"""
     pass
 
-
 class PDFHandler:
-    """Handler for PDF files"""
-    
+    @staticmethod
     def is_encrypted(file_path):
-        """
-        Check if PDF is password protected using available libraries.
-        
-        Args:
-            file_path (str): Path to PDF file
-            
-        Returns:
-            Tuple[bool, bool, float]: 
-                (password_protected, encrypted, confidence)
-        """
         if PDF2_AVAILABLE:
             try:
                 with open(file_path, 'rb') as f:
@@ -116,7 +93,7 @@ class PDFHandler:
                     if reader.is_encrypted:
                         return True, True, 1.0
             except PdfReadError:
-                pass  # Corrupted PDF #
+                pass
             except Exception:
                 return False, False, 0.0
 
@@ -125,42 +102,28 @@ class PDFHandler:
                 with Pdf.open(file_path) as pdf:
                     if pdf.is_encrypted:
                         return True, True, 1.0
-            except PasswordError:  # Explicit password error #
+            except PasswordError:
                 return True, True, 1.0
             except Exception:
                 pass
 
         return False, False, 0.0
 
-
 class ZIPHandler:
-    """Handler for ZIP archives"""
-    
+    @staticmethod
     def is_encrypted(file_path):
-        """
-        Check if ZIP contains encrypted files.
-        
-        Args:
-            file_path (str): Path to ZIP file
-            
-        Returns:
-            Tuple[bool, bool, float]: 
-                (password_protected, encrypted, confidence)
-        """
         try:
             with zipfile.ZipFile(file_path) as zf:
-                # Check each file's encryption flag #
                 for file_info in zf.infolist():
-                    if file_info.flag_bits & 0x1:  # Encryption flag #
+                    if file_info.flag_bits & 0x1:
                         return True, True, 1.0
-                return False, False, 1.0  # No encryption found #
+                return False, False, 1.0
         except zipfile.BadZipFile:
-            # Fallback for corrupted ZIPs #
             try:
                 with zipfile.ZipFile(file_path) as zf:
                     first_file = zf.infolist()[0]
                     with zf.open(first_file) as f:
-                        f.read(1)  # Try reading first byte #
+                        f.read(1)
             except RuntimeError as e:
                 if 'encrypted' in str(e).lower():
                     return True, True, 1.0
@@ -168,76 +131,34 @@ class ZIPHandler:
                 pass
         except Exception:
             pass
-            
         return False, False, 0.0
 
-
 class RARHandler:
-    """Handler for RAR archives"""
-    
+    @staticmethod
     def is_encrypted(file_path):
-        """
-        Check if RAR is password protected.
-        
-        Args:
-            file_path (str): Path to RAR file
-            
-        Returns:
-            Tuple[bool, bool, float]: 
-                (password_protected, encrypted, confidence)
-        """
         if not RARFILE_AVAILABLE:
             return False, False, 0.0
-            
         try:
             with rarfile.RarFile(file_path) as rf:
-                needs_pass = rf.needs_password()
-                return needs_pass, needs_pass, 1.0
+                return rf.needs_password(), rf.needs_password(), 1.0
         except Exception:
             return False, False, 0.0
-
 
 class SevenZipHandler:
-    """Handler for 7z archives"""
-    
+    @staticmethod
     def is_encrypted(file_path):
-        """
-        Check if 7z archive is password protected.
-        
-        Args:
-            file_path (str): Path to 7z file
-            
-        Returns:
-            Tuple[bool, bool, float]: 
-                (password_protected, encrypted, confidence)
-        """
         if not PY7ZR_AVAILABLE:
             return False, False, 0.0
-            
         try:
             with py7zr.SevenZipFile(file_path) as z7:
-                needs_pass = z7.needs_password()
-                return needs_pass, needs_pass, 1.0
+                return z7.needs_password(), z7.needs_password(), 1.0
         except Exception:
             return False, False, 0.0
 
-
 class SQLiteHandler:
-    """Handler for SQLite databases"""
-    
+    @staticmethod
     def is_encrypted(file_path):
-        """
-        Check if SQLite database is encrypted.
-        
-        Args:
-            file_path (str): Path to SQLite file
-            
-        Returns:
-            Tuple[bool, bool, float]: 
-                (password_protected, encrypted, confidence)
-        """
         try:
-            # Try to read database structure #
             conn = sqlite3.connect(f'file:{file_path}?mode=ro', uri=True)
             cursor = conn.cursor()
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table' LIMIT 1;")
@@ -250,27 +171,13 @@ class SQLiteHandler:
                 return True, True, 1.0
         except Exception:
             pass
-            
         return False, False, 0.0
 
-
 class PSTHandler:
-    """Handler for Outlook PST files"""
-    
+    @staticmethod
     def is_encrypted(file_path):
-        """
-        Check if PST file is password protected.
-        
-        Args:
-            file_path (str): Path to PST file
-            
-        Returns:
-            Tuple[bool, bool, float]: 
-                (password_protected, encrypted, confidence)
-        """
         if not PYPFF_AVAILABLE:
             return False, False, 0.0
-            
         try:
             pst = pypff.file()
             pst.open(file_path)
@@ -281,24 +188,11 @@ class PSTHandler:
                 return True, True, 1.0
         except Exception:
             pass
-            
         return False, False, 0.0
 
-
 class MSGHandler:
-    """Handler for Outlook MSG files"""
-    
+    @staticmethod
     def is_encrypted(file_path):
-        """
-        Check if MSG file is encrypted.
-        
-        Args:
-            file_path (str): Path to MSG file
-            
-        Returns:
-            Tuple[bool, bool, float]: 
-                (password_protected, encrypted, confidence)
-        """
         if EXTRACT_MSG_AVAILABLE:
             try:
                 msg = Message(file_path)
@@ -320,29 +214,15 @@ class MSGHandler:
 
         return False, False, 0.0
 
-
 class LibreOfficeHandler:
-    """Handler for LibreOffice files (.ods, .odt, .odp)"""
-    
+    @staticmethod
     def is_encrypted(file_path):
-        """
-        Check if LibreOffice file is encrypted by inspecting its ZIP structure.
-        
-        Args:
-            file_path (str): Path to LibreOffice file
-            
-        Returns:
-            Tuple[bool, bool, float]: 
-                (password_protected, encrypted, confidence)
-        """
         try:
             with zipfile.ZipFile(file_path) as zf:
                 if 'settings.xml' in zf.namelist():
                     settings_data = zf.read('settings.xml').decode('utf-8', errors='ignore')
-                    # Check for protection key in settings #
                     if 'config:config-item config:name="ProtectionKey"' in settings_data:
                         return True, True, 1.0
         except Exception:
             pass
-            
         return False, False, 0.0
