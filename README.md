@@ -88,12 +88,5 @@ python main.py /path/to/folder --batch
   
 ---
 
-## 🔑 Key Notes
-
-1. **Update URLs**: Replace `yourusername` with your actual GitHub username in links.
-2. **Include **``: Ensure all required and optional dependencies are documented.
-3. **Optional Libraries Matter**: Tools like `pikepdf` and `rarfile` greatly improve accuracy.
-
----
 
 Contributions and feedback are welcome! ⭐
