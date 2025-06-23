@@ -1,32 +1,35 @@
-# password_detector/magika_detector.py
+# password_detector/magika_detector.py #
 
 from magika import Magika
 import os
 
 
 class MagikaDetector:
-    """File type detection using Magika's ML model."""
+    """File type detection using Google's Magika machine learning model."""
     
     def __init__(self):
+        """Initialize Magika model."""
         self.model = Magika()
 
     def detect(self, file_path: str) -> str:
         """
-        Identify file type using Magika, falling back to 'unknown' on errors.
+        Identify file type using Magika's ML model.
         
         Args:
-            file_path (str): File to analyze.
-        
+            file_path (str): Path to the file to analyze
+            
         Returns:
-            str: Detected file type (e.g., 'pdf', 'zip').
+            str: Internal file type identifier (e.g., 'pdf', 'zip')
+                  Returns 'unknown' if detection fails
         """
         try:
+            # Get Magika's prediction #
             result = self.model.identify_path(file_path)
             mime = result.output.mime_type
         except Exception:
             return 'unknown'
 
-        # MIME type to internal format mapping
+        # Map MIME types to our internal format identifiers #
         mime_map = {
             'application/pdf': 'pdf',
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'office_openxml',
