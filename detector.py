@@ -1,6 +1,7 @@
 # password_detector/detector.py #
 
 import os
+import time  
 from typing import List, Dict
 from type_utils import FileTypeDetector
 from entropy import EntropyAnalyzer
@@ -38,15 +39,18 @@ class PasswordProtectionDetector:
             file_path (str): Path to the file.
         
         Returns:
-            Dict: Results with keys 'password_protected', 'encrypted', and 'confidence'.
+            Dict: Results with keys 'password_protected', 'encrypted', 'confidence', and 'duration'.
         """
+        start_time = time.perf_counter() # Start Time #
         # Skip invalid files #
         if not os.path.isfile(file_path) or os.path.getsize(file_path) == 0:
+            end_time = time.perf_counter() # End Time #
             return {
                 'file': file_path,
                 'password_protected': False,
                 'encrypted': False,
-                'confidence': 0.0
+                'confidence': 0.0,
+                'duration': end_time - start_time  
             }
 
         # --- File Type Detection --- #
@@ -54,9 +58,13 @@ class PasswordProtectionDetector:
 
         # --- Handler-Based Analysis --- #
         password_protected, encrypted, confidence = False, False, 0.0
-        if file_type in self.handlers:
-            handler = self.handlers[file_type]
-            password_protected, encrypted, confidence = handler.is_encrypted(file_path)
+        try:
+            if file_type in self.handlers:
+                handler = self.handlers[file_type]
+                password_protected, encrypted, confidence = handler.is_encrypted(file_path)
+        except Exception as e:
+            print(f"Error analyzing {file_path}: {str(e)}")
+            confidence = 0.0
 
         # --- Entropy Fallback (Low-Confidence Cases) --- #
         if confidence < 0.5:
@@ -65,11 +73,14 @@ class PasswordProtectionDetector:
                 encrypted = encrypted_entropy
                 confidence = entropy_conf
 
+        end_time = time.perf_counter() 
+
         return {
             'file': file_path,
             'password_protected': password_protected,
             'encrypted': encrypted,
-            'confidence': confidence
+            'confidence': confidence,
+            'duration': end_time - start_time  
         }
 
     def scan_directory(self, directory: str) -> List[Dict]:

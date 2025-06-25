@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import time  # For timing operations
 from detector import PasswordProtectionDetector
 
 def main():
@@ -12,52 +13,47 @@ def main():
     based on user input. Outputs results to the console.
     """
     
+    # Record start time for total execution
+    total_start_time = time.perf_counter()
+    
     # --- Argument Parsing --- #
-    # Set up command-line argument parser with description and expected arguments #
     parser = argparse.ArgumentParser(
         description='Password Protection & Encryption Detector - '
         'Scans files for password protection and encryption'
     )
-    
-    # Required positional argument for file/directory path #
     parser.add_argument(
         'path', 
         help='File or directory path to scan (required)'
     )
-    
-    # Optional flag for batch directory scanning #
     parser.add_argument(
         '--batch', 
-        action='store_true',  # Sets to True when flag is present #
+        action='store_true',
         help='Enable batch mode for scanning entire directories'
     )
-    
-    # Parse the command-line arguments #
     args = parser.parse_args()
 
     # --- Detector Initialization --- #
-    # Create an instance of the password protection detector #
     detector = PasswordProtectionDetector()
 
     # --- Processing Logic --- #
     
     # Batch mode processing (directory scan) #
     if args.batch and os.path.isdir(args.path):
-        print(f"Scanning directory: {args.path}")
+        print(f"Scanning directory: {args.path}\n")
         
         # Scan all files in directory recursively #
         results = detector.scan_directory(args.path)
         
         # Print results for each file #
         for result in results:
-            # Determine protection status #
             status = "PASSWORD PROTECTED" if result['password_protected'] else "NOT PASSWORD PROTECTED"
             
-            # Format output with file path, status, encryption flag, and confidence score #
+            # Format output to include the individual file's analysis duration
             print(
                 f"{result['file']}: {status} "
                 f"(Encrypted: {result['encrypted']}, "
-                f"Confidence: {result['confidence']:.2f})"
+                f"Confidence: {result['confidence']:.2f}, "
+                f"Time: {result['duration']:.4f}s)"
             )
     
     # Single file processing #
@@ -67,14 +63,14 @@ def main():
         # Analyze the single file #
         result = detector.analyze_file(args.path)
         
-        # Determine protection status #
         status = "PASSWORD PROTECTED" if result['password_protected'] else "NOT PASSWORD PROTECTED"
         
-        # Format output with status, encryption flag, and confidence score #
+        # Format output to include the file's analysis duration
         print(
             f"Result: {status} "
             f"(Encrypted: {result['encrypted']}, "
-            f"Confidence: {result['confidence']:.2f})"
+            f"Confidence: {result['confidence']:.2f}, "
+            f"Time: {result['duration']:.4f}s)"
         )
     
     # Invalid path handling #
@@ -85,6 +81,11 @@ def main():
             "1. A valid file path, or\n"
             "2. A directory path with --batch flag for scanning multiple files"
         )
+    
+    # Record end time for total execution
+    total_end_time = time.perf_counter()
+    print(f"\nTotal execution time: {total_end_time - total_start_time:.4f} seconds.")
+
 
 # Standard Python idiom for executing main function #
 if __name__ == "__main__":

@@ -58,34 +58,43 @@ class OfficeOpenXMLHandler:
     
     def is_encrypted(file_path):
         """
-        Check if Office OpenXML file is password protected.
-        
-        Args:
-            file_path (str): Path to the file
-            
-        Returns:
-            Tuple[bool, bool, float]: 
-                (password_protected, encrypted, confidence)
+        Check if Office OpenXML file is password protected with more precise detection.
         """
         if not MSOFFCRYPTO_AVAILABLE:
             return False, False, 0.0
             
         try:
-            # First try with msoffcrypto #
             with open(file_path, 'rb') as f:
                 office_file = msoffcrypto.OfficeFile(f)
-                if office_file.is_encrypted():
-                    return True, False, 1.0
-        except Exception:
-            pass
-
-        # Fallback: Check for EncryptedPackage in ZIP structure #
-        try:
-            with zipfile.ZipFile(file_path) as zf:
-                if 'EncryptedPackage' in zf.namelist():
+                
+                # First check if file is encrypted
+                if not office_file.is_encrypted():
+                    return False, False, 1.0
+                
+                # If encrypted, try to determine if it's password protected
+                try:
+                    # Try to decrypt with empty password
+                    office_file.load_key(password='')
+                    # If succeeds, it's encrypted but not password protected
+                    return False, True, 0.8
+                except (msoffcrypto.exceptions.InvalidKeyError, 
+                       msoffcrypto.exceptions.DecryptionError):
+                    # If fails, it's password protected
                     return True, True, 1.0
+                    
         except Exception:
-            pass
+            # Fallback ZIP structure check
+            try:
+                with zipfile.ZipFile(file_path) as zf:
+                    # Check for specific protection indicators
+                    if 'EncryptedPackage' in zf.namelist():
+                        return True, True, 1.0
+                    if 'docProps/core.xml' in zf.namelist():
+                        core_data = zf.read('docProps/core.xml').decode('utf-8', errors='ignore')
+                        if 'DocumentProtection' in core_data:
+                            return True, False, 0.9
+            except Exception:
+                pass
 
         return False, False, 0.0
 
@@ -109,24 +118,31 @@ class PDFHandler:
             Tuple[bool, bool, float]: 
                 (password_protected, encrypted, confidence)
         """
+        # Try PyPDF2 first
         if PDF2_AVAILABLE:
             try:
                 with open(file_path, 'rb') as f:
                     reader = PdfReader(f)
                     if reader.is_encrypted:
-                        return True, True, 1.0
-            except PdfReadError:
-                pass  # Corrupted PDF #
+                        # Try to determine if password is actually required
+                        try:
+                            if len(reader.pages) > 0:  # If we can access pages
+                                return False, True, 0.8  # Encrypted but not password protected
+                        except Exception:
+                            return True, True, 1.0  # Password protected
             except Exception:
-                return False, False, 0.0
+                pass
 
+        # Fallback to pikepdf
         if PIKEPDF_AVAILABLE:
             try:
                 with Pdf.open(file_path) as pdf:
                     if pdf.is_encrypted:
-                        return True, True, 1.0
-            except PasswordError:  # Explicit password error #
-                return True, True, 1.0
+                        try:
+                            pdf.pages[0]  # Try accessing content
+                            return False, True, 0.8
+                        except PasswordError:
+                            return True, True, 1.0
             except Exception:
                 pass
 
@@ -322,7 +338,7 @@ class MSGHandler:
 
 
 class LibreOfficeHandler:
-    """Handler for LibreOffice files (.ods, .odt, .odp)"""
+    """Handler for LibreOffice files (.ods, .odt, .odp, .odm)"""
     
     def is_encrypted(file_path):
         """
@@ -337,12 +353,21 @@ class LibreOfficeHandler:
         """
         try:
             with zipfile.ZipFile(file_path) as zf:
-                if 'settings.xml' in zf.namelist():
-                    settings_data = zf.read('settings.xml').decode('utf-8', errors='ignore')
-                    # Check for protection key in settings #
-                    if 'config:config-item config:name="ProtectionKey"' in settings_data:
+                # Check manifest for encryption
+                if 'META-INF/manifest.xml' in zf.namelist():
+                    manifest = zf.read('META-INF/manifest.xml').decode('utf-8', errors='ignore')
+                    if 'manifest:encryption-data' in manifest:
+                        return True, True, 1.0
+                
+                # Check content accessibility
+                try:
+                    if 'content.xml' in zf.namelist():
+                        zf.read('content.xml')  # Try to read main content
+                    return False, False, 1.0
+                except RuntimeError as e:
+                    if 'encrypted' in str(e).lower():
                         return True, True, 1.0
         except Exception:
             pass
             
-        return False, False, 0.0
+        return False, False, 0.0    

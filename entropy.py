@@ -9,7 +9,7 @@ from typing import Tuple
 # High-entropy file extensions (likely encrypted) #
 ENC_EXT = {'.gpg', '.enc', '.aes', '.crypt', '.pgp'}
 # Formats that naturally exhibit high entropy (e.g., compressed files) #
-HIGH_ENTROPY_FORMATS = {'.docx', '.xlsx', '.pptx', '.ods'}
+HIGH_ENTROPY_FORMATS = {'.docx', '.xlsx', '.pptx', '.ods', '.odt', '.odp', '.odg', '.odf', '.odm'}
 
 
 class EntropyAnalyzer:

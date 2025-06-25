@@ -33,13 +33,22 @@ class MagikaDetector:
         mime_map = {
             'application/pdf': 'pdf',
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'office_openxml',
-            'application/vnd.ms-excel': 'office_legacy',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'office_openxml',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'office_openxml',
+            'application/vnd.ms-excel': 'office_legacy',
+            'application/vnd.ms-powerpoint': 'office_legacy',
+            'application/msword': 'office_legacy',
             'application/zip': 'zip',
             'application/x-rar': 'rar',
             'application/x-7z-compressed': '7z',
             'application/vnd.sqlite3': 'sqlite',
             'application/vnd.ms-outlook': 'msg',
+            'application/vnd.oasis.opendocument.text': 'libre_office',
+            'application/vnd.oasis.opendocument.spreadsheet': 'libre_office',
+            'application/vnd.oasis.opendocument.presentation': 'libre_office',
+            'application/vnd.oasis.opendocument.graphics': 'libre_office',
+            'application/vnd.oasis.opendocument.formula': 'libre_office',
+            'application/vnd.oasis.opendocument.database': 'libre_office',
             'application/octet-stream': 'unknown',
         }
 
