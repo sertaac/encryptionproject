@@ -1,5 +1,4 @@
-import os  # <-- Bunu en üste ekleyin
-
+import os 
 from setuptools import setup, find_packages
 
 setup(
