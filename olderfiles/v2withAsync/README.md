@@ -1,8 +1,11 @@
-# Password Protection & Encryption Detector
+# Password Protection & Encryption Detector Async Version
 
 ## Overview
 
-A Python tool for detecting password protection and encryption in various file formats. The tool supports multiple file types including Office documents, PDFs, archives (ZIP, RAR, 7z), SQLite databases, and email formats (PST, MSG).
+A powerful Python tool to detect password-protected and encrypted files across a variety of formats using format-specific handlers and entropy-based analysis.
+
+%100 Accuracy on 180 Test Cases for Password Protection.
+%92.78 Accuracy on 180 Test Cases for Encryption Detection.
 
 ## Key Features
 
