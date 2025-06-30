@@ -121,7 +121,6 @@ Contributions are welcome! Please open an issue or pull request for:
 - Performance optimizations
 
 ## License
-
 MIT License - See LICENSE file for details.
 ---
 
