@@ -104,7 +104,26 @@ Example:
 ## Project Structure
 
 ```
-
+encryptionproject/
+├── EncryptionProject/ # Current production version
+│ ├── password_detector_package/
+│ │ ├── init.py # Package exports
+│ │ ├── detector.py # Main detector class with async support
+│ │ ├── entropy.py # Entropy analysis implementation
+│ │ ├── file_handlers.py # Format-specific handlers (10+ formats)
+│ │ ├── magika_detector.py # File type detection using Google's Magika
+│ │ └── type_utils.py # Type detection utilities
+│ ├── scripts/
+│ │ └── run_detector.py # CLI entry point with both sync/async modes
+│ └── setup.py # Package configuration and dependencies
+│ │ ├── password_detector_package/ # Core detection logic package
+│ │ ├── scripts/ # CLI implementation
+│ │ └── setup.py # Package configuration
+│ 
+├── documents/ # Project documentation and research
+├── olderfiles/ # Legacy versions
+│ ├── v1Final/ # Initial synchronous version
+│ └── v2withAsync/ # First async implementation
 ```
 
 ## Limitations
