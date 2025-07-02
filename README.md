@@ -98,7 +98,7 @@ Example:
 ## Performance Considerations
 
 - By default uses asynchronous I/O with thread pool (2x CPU cores + 4 threads)
-- For large directories (>10,000 files), batch mode is recommended
+- For large directories (>1000 files), batch mode is recommended
 - Entropy analysis is performed as a fallback for low-confidence cases
 
 ## Project Structure
