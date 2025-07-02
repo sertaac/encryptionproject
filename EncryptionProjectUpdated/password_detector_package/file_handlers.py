@@ -45,11 +45,7 @@ try:
     OLEFILE_AVAILABLE = True
 except ImportError:
     OLEFILE_AVAILABLE = False
-try:
-    from extract_msg import Message
-    EXTRACT_MSG_AVAILABLE = True
-except ImportError:
-    EXTRACT_MSG_AVAILABLE = False
+
 
 
 # ========== HANDLER CLASSES ========== #
