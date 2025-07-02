@@ -59,7 +59,7 @@ pip install .
 ### Optional Dependencies
 For full format support, install optional dependencies:
 ```bash
-pip install msoffcrypto-tool PyPDF2 pikepdf rarfile py7zr pypff olefile extract-msg
+pip install msoffcrypto-tool PyPDF2 pikepdf rarfile py7zr pypff olefile 
 ```
 
 ## Usage
