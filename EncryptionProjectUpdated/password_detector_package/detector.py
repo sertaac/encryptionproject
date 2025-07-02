@@ -2,12 +2,11 @@
 
 import os
 import time  
-from typing import List, Dict
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
-
-from .type_utils import FileTypeDetector
+from typing import List, Dict
 from .entropy import EntropyAnalyzer
+from .type_utils import FileTypeDetector
+from concurrent.futures import ThreadPoolExecutor
 from .file_handlers import (
     OfficeOpenXMLHandler, OfficeLegacyHandler, PDFHandler, ZIPHandler,
     RARHandler, SevenZipHandler, SQLiteHandler, PSTHandler, MSGHandler,
