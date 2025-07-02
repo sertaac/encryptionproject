@@ -42,10 +42,8 @@ def main_cli():
     with ThreadPoolExecutor(max_workers=max_workers) as global_executor:
         if args.sync:
             print("Running in explicit SYNCHRONOUS mode (using SynchronousPasswordProtectionDetector)...")
-            # Synchronous dedektör sınıfını başlatıyoruz
             detector = SynchronousPasswordProtectionDetector(executor=global_executor)
             
-            # Çağrılar artık doğrudan senkron metotlar gibi yapılır
             if args.batch and os.path.isdir(args.path):
                 results = detector.scan_directory(args.path)
             elif os.path.isfile(args.path):
