@@ -1,19 +1,18 @@
-# EncryptionProject/scripts/run_detector.py
+# EncryptionProject/scripts/run_detector.py #
 
-import argparse
 import os
+import sys
 import time
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
+import argparse
 import multiprocessing
-import sys
-
+from concurrent.futures import ThreadPoolExecutor
 from password_detector_package.detector import PasswordProtectionDetector
 from password_detector_package.sync_detector import SynchronousPasswordProtectionDetector
 
 
 def main_cli():
-    """Komut satırı arayüzü ana giriş noktası."""
+    """Command Line Interface Start Point."""
     total_start_time = time.perf_counter()
 
     parser = argparse.ArgumentParser(
