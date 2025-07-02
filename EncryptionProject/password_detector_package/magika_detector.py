@@ -1,8 +1,8 @@
 # EncryptionProject/password_detector_package/magika_detector.py #
 
-from magika import Magika
 import os
 import asyncio 
+from magika import Magika
 
 
 class MagikaDetector:
