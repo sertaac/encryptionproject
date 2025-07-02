@@ -273,21 +273,7 @@ class PSTHandler:
         return await asyncio.to_thread(_check_pst_blocking, file_path)
 
 
-class MSGHandler:
-    """Handler for Outlook MSG files"""
-    
-    @staticmethod
-    async def is_encrypted(file_path: str):
-        def _check_msg_blocking(path):
-            if EXTRACT_MSG_AVAILABLE:
-                try:
-                    msg = Message(path)
-                    msg.close()
-                    return False, False, 1.0
-                except Exception as e:
-                    if 'encrypted' in str(e).lower():
-                        return True, True, 1.0
-
+class OLEHandler:
             if OLEFILE_AVAILABLE:
                 try:
                     ole = olefile.OleFileIO(path)
