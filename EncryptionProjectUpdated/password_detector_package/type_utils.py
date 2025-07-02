@@ -2,7 +2,6 @@
 
 import os
 import asyncio 
-
 from .magika_detector import MagikaDetector
 
 
