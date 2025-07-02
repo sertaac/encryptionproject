@@ -1,10 +1,9 @@
 # EncryptionProject/password_detector_package/sync_detector.py
 
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
 from typing import Dict, List
-
 from .detector import PasswordProtectionDetector
+from concurrent.futures import ThreadPoolExecutor
 
 class SynchronousPasswordProtectionDetector:
     """
