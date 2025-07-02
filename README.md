@@ -34,12 +34,6 @@ This project is licensed under the MIT License. It uses several third-party libr
 
 ## Installation
 
-The tool is available on PyPI and can be installed with pip:
-
-```bash
-pip install password-protection-detector
-```
-
 To install from the source, clone the repository and install locally:
 
 ```bash
