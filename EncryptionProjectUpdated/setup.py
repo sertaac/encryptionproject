@@ -15,7 +15,6 @@ setup(
         'py7zr',
         'pypff',             
         'olefile',
-        'extract-msg',
     ],
     entry_points={
         'console_scripts': [
