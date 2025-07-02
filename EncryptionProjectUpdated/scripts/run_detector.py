@@ -8,7 +8,6 @@ from concurrent.futures import ThreadPoolExecutor
 import multiprocessing
 import sys
 
-# Ana paketten hem asenkron hem de senkron dedektör sınıflarını import ediyoruz
 from password_detector_package.detector import PasswordProtectionDetector
 from password_detector_package.sync_detector import SynchronousPasswordProtectionDetector
 
@@ -37,7 +36,6 @@ def main_cli():
     )
     args = parser.parse_args()
 
-    # Ortak ThreadPoolExecutor'ı belirliyoruz
     num_cpu_cores = multiprocessing.cpu_count()
     max_workers = max(32, num_cpu_cores * 2 + 4) 
     
@@ -54,9 +52,8 @@ def main_cli():
                 results = [detector.analyze_file(args.path)]
             else:
                 sys.stderr.buffer.write(b"Error: Invalid path provided.\n")
-                results = [] # Hata durumunda boş liste
+                results = [] 
             
-            # Sonuçları işleme (senkron modda elde edilen sonuçlar)
             for result in results:
                 if result:
                     status = "PASSWORD PROTECTED" if result['password_protected'] else "NOT PASSWORD PROTECTED"
@@ -70,10 +67,8 @@ def main_cli():
 
         else:
             print("Running in ASYNCHRONOUS mode (using PasswordProtectionDetector)...")
-            # Asenkron dedektör sınıfını başlatıyoruz
             detector = PasswordProtectionDetector(executor=global_executor)
             
-            # Asenkron mantığı çalıştıracak bir async fonksiyon tanımlıyoruz
             async def _run_async_logic():
                 if args.batch and os.path.isdir(args.path):
                     return await detector.scan_directory(args.path)
@@ -83,10 +78,8 @@ def main_cli():
                     sys.stderr.buffer.write(b"Error: Invalid path provided.\n")
                     return []
 
-            # Asenkron fonksiyonu çalıştırıyoruz ve sonuçları alıyoruz
             results = asyncio.run(_run_async_logic())
             
-            # Sonuçları işleme (asenkron modda elde edilen sonuçlar)
             for result in results:
                 if result:
                     status = "PASSWORD PROTECTED" if result['password_protected'] else "NOT PASSWORD PROTECTED"
