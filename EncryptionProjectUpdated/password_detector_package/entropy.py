@@ -2,9 +2,8 @@
 
 import os
 import math
-from collections import Counter
 from typing import Tuple
-
+from collections import Counter
 
 # High-entropy file extensions (likely encrypted) #
 ENC_EXT = {'.gpg', '.enc', '.aes', '.crypt', '.pgp'}
