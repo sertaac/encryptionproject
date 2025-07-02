@@ -5,6 +5,20 @@ A high-performance Python tool for detecting password protection and encryption 
 ![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
+This project is licensed under the MIT License.
+
+It uses several third-party libraries, each of which retains its own license:
+- magika (Apache 2.0)
+- msoffcrypto-tool (MIT)
+- PyPDF2 (BSD)
+- pikepdf (MPL-2.0)
+- rarfile (uses unrar, with usage restrictions)
+- py7zr (LGPL-2.1+)
+- pypff (LGPLv3+)
+- olefile (BSD-like)
+
+These libraries are used as-is and not modified.
+
 ## Features
 
 - **Multi-format support**: Detects password protection in 10+ file formats
