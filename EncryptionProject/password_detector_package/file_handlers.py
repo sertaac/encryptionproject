@@ -45,7 +45,11 @@ try:
     OLEFILE_AVAILABLE = True
 except ImportError:
     OLEFILE_AVAILABLE = False
-
+try:
+    from extract_msg import Message
+    EXTRACT_MSG_AVAILABLE = True
+except ImportError:
+    EXTRACT_MSG_AVAILABLE = False
 
 # ========== HANDLER CLASSES ========== #
 
@@ -278,6 +282,14 @@ class MSGHandler:
     @staticmethod
     async def is_encrypted(file_path: str):
         def _check_msg_blocking(path):
+            if EXTRACT_MSG_AVAILABLE:
+                try:
+                    msg = Message(path)
+                    msg.close()
+                    return False, False, 1.0
+                except Exception as e:
+                    if 'encrypted' in str(e).lower():
+                        return True, True, 1.0
 
             if OLEFILE_AVAILABLE:
                 try:
