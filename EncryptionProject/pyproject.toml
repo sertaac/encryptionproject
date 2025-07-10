@@ -1,6 +1,6 @@
-# -------------------------------
-# pyproject.toml  –  PEP 621 formatı
-# -------------------------------
+# -------------- #
+# pyproject.toml #
+# -------------- #
 
 [build-system]
 requires = ["setuptools>=68.0", "wheel"]
@@ -44,12 +44,11 @@ dependencies = [
   "olefile",
 ]
 
-[project.urls]              # İsteğe bağlı ama faydalı
+[project.urls]              
 Repository = "https://github.com/sertaac/encryptionproject"
 
-[project.scripts]           # console_scripts eşdeğeri
+[project.scripts]          
 run-detector = "scripts.run_detector:main_cli"
 
-# setup.py'daki include_package_data=True satırı:
 [tool.setuptools]
 include-package-data = true
