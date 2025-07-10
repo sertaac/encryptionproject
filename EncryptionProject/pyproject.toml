@@ -1,0 +1,55 @@
+# -------------------------------
+# pyproject.toml  –  PEP 621 formatı
+# -------------------------------
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "password-protection-detector"
+version = "0.1.0"
+description = "A tool to detect password protection and encryption in various file types."
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.8"
+
+authors = [
+  { name = "Sertac Atac",   email = "sertacataac@gmail.com" },
+  { name = "Ramazan Bagis", email = "ramazanbagiss06@gmail.com" }
+]
+
+license = { text = "MIT" }
+
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Topic :: Security",
+  "Topic :: Utilities",
+]
+
+dependencies = [
+  "magika",
+  "msoffcrypto-tool",
+  "PyPDF2",
+  "pikepdf",
+  "rarfile",
+  "py7zr",
+  "pypff",
+  "olefile",
+]
+
+[project.urls]              # İsteğe bağlı ama faydalı
+Repository = "https://github.com/sertaac/encryptionproject"
+
+[project.scripts]           # console_scripts eşdeğeri
+run-detector = "scripts.run_detector:main_cli"
+
+# setup.py'daki include_package_data=True satırı:
+[tool.setuptools]
+include-package-data = true
